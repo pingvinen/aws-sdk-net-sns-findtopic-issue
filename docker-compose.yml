@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  localstack:
+    image: localstack/localstack
+    restart: "no"
+    environment:
+      SERVICES: sns:4575,sqs:4576,cloudformation:4581
+      DEFAULT_REGION: eu-central-1
+    ports:
+      - 4575:4575 ## sns
+      - 4576:4576 ## sqs
+      - 4581:4581 ## cloudformation
+      - 8080:8080 ## dashboard
+
+  awslocal:
+    image: skarpdev/awscli-local
+    environment:
+      LOCALSTACK_HOST: localstack
+    entrypoint: awslocal cloudformation create-stack --template-body file:///data/localstack-cloudformation.yml --stack-name teststack --region=eu-central-1
+    volumes:
+      - ./.docker/templates:/data
+    depends_on:
+      - localstack
+    links:
+      - localstack

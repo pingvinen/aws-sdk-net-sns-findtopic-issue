@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Initialization of LocalStack so it looks like a ready infrastructure
+Resources:
+  MyQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: MyQueue
+  MyTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: MyTopic
+      Subscription:
+        - Protocol: sqs
+          Endpoint:
+            "Fn::GetAtt": ["MyQueue", "Arn"]
